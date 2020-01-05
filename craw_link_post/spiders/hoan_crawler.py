@@ -11,7 +11,9 @@ class HoanCrawler(scrapy.Spider):
 	name ="hoan"
 	
 	def __init__(self):
-		pass
+		con = Database()._connect_db()
+		self.conn = con["conn"]
+		self.cursor = con["cursor"]
 	
 	def get_config(self, link=''):
 		parse_link = configparser.ConfigParser()
@@ -72,5 +74,5 @@ class HoanCrawler(scrapy.Spider):
 			item = {}
 			item['url'] = link
 			item['domain'] = xpath["domain"]
-			Database()._insert_post(item)
+			Database()._insert_post(self.conn, self.cursor, item)
 			print(link, "url")

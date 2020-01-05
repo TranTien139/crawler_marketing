@@ -9,6 +9,9 @@ __author__ = 'TranTien'
 
 class Database:
 	def __init__(self):
+		pass
+	
+	def _connect_db(self):
 		print("connect database")
 		self.conn = MySQLdb.connect(host=settings['MYSQL_HOST'],
 		                            port=int(settings['MYSQL_PORT']),
@@ -18,15 +21,19 @@ class Database:
 		                            charset="utf8",
 		                            use_unicode=True)
 		self.cursor = self.conn.cursor()
+		item = dict()
+		item['conn'] = self.conn
+		item['cursor'] = self.cursor
+		return item
 	
-	def _insert_post(self, item):
+	def _insert_post(self, conn, cursor, item):
 		try:
-			check = self.cursor.execute("""SELECT * FROM articles WHERE url=%s""", [item['url']])
+			check = cursor.execute("""SELECT * FROM articles WHERE url=%s""", [item['url']])
 			if not check:
-				self.cursor.execute("""INSERT INTO articles
+				cursor.execute("""INSERT INTO articles
                 (domain, url)
                 VALUES (%s, %s)""", (item["domain"], item["url"]))
-				self.conn.commit()
+				conn.commit()
 				print('Luu du lieu thanh cong')
 			else:
 				print("Du lieu nay da ton tai")
